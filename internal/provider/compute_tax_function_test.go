@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/tfversion"
 )
 
-func TestExampleFunction_Known(t *testing.T) {
+func TestComputeTaxFunction_Known(t *testing.T) {
 	resource.UnitTest(t, resource.TestCase{
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version1_8_0),
@@ -20,19 +20,19 @@ func TestExampleFunction_Known(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: `
-				output "test" {
-					value = provider::scaffolding::example("testvalue")
-				}
-				`,
+        output "test" {
+          value = provider::hashicups::compute_tax(5.00, 0.085)
+        }
+        `,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckOutput("test", "testvalue"),
+					resource.TestCheckOutput("test", "5.43"),
 				),
 			},
 		},
 	})
 }
 
-func TestExampleFunction_Null(t *testing.T) {
+func TestComputeTaxFunction_Null(t *testing.T) {
 	resource.UnitTest(t, resource.TestCase{
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version1_8_0),
@@ -41,37 +41,12 @@ func TestExampleFunction_Null(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: `
-				output "test" {
-					value = provider::scaffolding::example(null)
-				}
-				`,
+        output "test" {
+          value = provider::hashicups::compute_tax(null, 0.085)
+        }
+        `,
 				// The parameter does not enable AllowNullValue
 				ExpectError: regexp.MustCompile(`argument must not be null`),
-			},
-		},
-	})
-}
-
-func TestExampleFunction_Unknown(t *testing.T) {
-	resource.UnitTest(t, resource.TestCase{
-		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
-			tfversion.SkipBelow(tfversion.Version1_8_0),
-		},
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				Config: `
-				resource "terraform_data" "test" {
-					input = "testvalue"
-				}
-				
-				output "test" {
-					value = provider::scaffolding::example(terraform_data.test.output)
-				}
-				`,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckOutput("test", "testvalue"),
-				),
 			},
 		},
 	})
